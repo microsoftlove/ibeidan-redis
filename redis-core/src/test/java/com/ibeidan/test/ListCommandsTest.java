@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * @author lee
  * DATE 2020/5/6 16:41
+ * 列表元素可重复
  */
 public class ListCommandsTest extends AbstractRedisTest{
 
@@ -213,18 +214,16 @@ public class ListCommandsTest extends AbstractRedisTest{
      **/
     @Test
     public void brpoplpush() throws InterruptedException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Jedis jedis = createJedis();
-                 jedis.lpush(key,"a");
+        Runnable run = () -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }).start();
+            Jedis jedis = createJedis();
+            jedis.lpush(key,"a");
+        };
+        new Thread(run).start();//启动线程
         Thread.sleep(1000);
         String ele = jedis.brpoplpush(key,dstKey,0);
         print(ele);

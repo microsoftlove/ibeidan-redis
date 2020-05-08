@@ -129,7 +129,7 @@ public class HashSetCommandTest extends AbstractRedisTest {
      **/
     @Test
     public void hlen(){
-        Long l = jedis.hlen(key).longValue();
+        long l = jedis.hlen(key);
         print(l);
     }
 

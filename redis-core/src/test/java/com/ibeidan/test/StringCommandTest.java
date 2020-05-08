@@ -42,6 +42,10 @@ public class StringCommandTest extends AbstractRedisTest {
         assertEquals("bars",value);
     }
 
+    /**
+     * TODO 时间复杂度：O(N) ，其中 N 为给定键的数量。
+     * 返回给定的一个或多个字符串键的值。
+     **/
     @Test
     public void mget(){
         List<String> values = jedis.mget("foo","bar");
