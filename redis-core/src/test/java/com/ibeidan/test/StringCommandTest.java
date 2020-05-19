@@ -2,9 +2,11 @@ package com.ibeidan.test;
 
 
 import org.junit.Test;
+import redis.clients.jedis.params.SetParams;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -25,6 +27,18 @@ public class StringCommandTest extends AbstractRedisTest {
         assertEquals("bar",value);
 
         assertNull(jedis.get("bar"));
+    }
+
+    @Test
+    public void setParams(){
+        String lockId = UUID.randomUUID().toString();
+
+        SetParams setParams = new SetParams();
+        setParams.nx();
+        setParams.px(500000);
+        //尝试加锁，如果成功返回OK
+        String result =  jedis.set("ee",lockId,setParams);
+        print(result);
     }
 
     /**

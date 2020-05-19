@@ -3,8 +3,7 @@ package com.ibeidan.test;
 import org.junit.Test;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.Arrays;
-import java.util.List;
+
 
 /**
  * @author lee
@@ -12,12 +11,9 @@ import java.util.List;
  */
 public class PublishSubscribeCommands extends AbstractRedisTest {
 
-    private Long result = 0l;
+    private Long result ;
 
     private String channel1 = "channel1";
-    private String channel2 = "channel2";
-    private String channel3 = "channel3";
-    final List<String> exceptedActiveChannels = Arrays.asList(channel1,channel2,channel3);
 
     /**
      * todo 时间复杂度： O(N+M)，其中 N 是频道 channel 的订阅者数量，
