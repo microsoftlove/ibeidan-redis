@@ -5,7 +5,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -17,15 +16,31 @@ import java.util.concurrent.locks.LockSupport;
 public class RedisLock  implements ILock {
 
     private static final String LOCK_SUCESS = "OK";
-    private static final String SET_IF_NOT_EXIST = "NX";
-    private static final String SET_WITH_EXPIRE_TIME = "PX ";
+
 
     private Jedis jedis;
 
     private String lockKey;
 
+
+    public RedisLock(Jedis jedis, String lockKey, int lockTimeout, int retryTime) {
+        this.jedis = jedis;
+        this.lockKey = lockKey;
+        this.lockTimeout = lockTimeout;
+        this.retryTime = retryTime;
+    }
+
     public RedisLock(Jedis jedis) {
         this.jedis = jedis;
+    }
+
+    public RedisLock(String lockKey) {
+        this.lockKey = lockKey;
+    }
+
+    public RedisLock(String lockKey, int lockTimeout) {
+        this.lockKey = lockKey;
+        this.lockTimeout = lockTimeout;
     }
 
     // 默认锁过期时间 30s
@@ -36,18 +51,18 @@ public class RedisLock  implements ILock {
 
     @Override
     public String lock() {
-        return null;
+        return this.tryLock(-1,null);
     }
 
     @Override
     public String tryLock() {
-        return null;
+        return this.tryLock(2000,TimeUnit.MILLISECONDS);
     }
 
     @Override
     public String tryLock(long tryLockTime, TimeUnit timeUnit) {
         //判断是否死循环获取锁
-        boolean forever = tryLockTime < 0;
+        boolean forever = (tryLockTime < 0);
         final long startTime = System.currentTimeMillis();
         if (tryLockTime < 0){
             tryLockTime = 0;
@@ -84,7 +99,7 @@ public class RedisLock  implements ILock {
         setParams.nx();
         setParams.px(lockTimeout);
         //尝试加锁，如果成功返回OK
-        String result =  jedis.set("ee",lockId,setParams);
+        String result =  jedis.set(lockKey,lockId,setParams);
         //加锁成功返回value的值，用于解锁
        return LOCK_SUCESS.equals(result) ? lockId : null;
     }
@@ -99,9 +114,14 @@ public class RedisLock  implements ILock {
                 "then return redis.call('del' , KEYS[1]) " +
                 " else return 0 end";
 
-        List list = (List) jedis.eval(luaScript, Collections.singletonList(lockKey) ,Collections.singletonList(lockId));
+        long list = (long) jedis.eval(luaScript, Collections.singletonList(lockKey) ,Collections.singletonList(lockId));
+        System.out.println(list);
 
+    }
 
+    //更新key的过期时间
+    public void  updateKey(String lockId){
+        jedis.setex(lockKey,lockTimeout,lockId);
     }
 
 
