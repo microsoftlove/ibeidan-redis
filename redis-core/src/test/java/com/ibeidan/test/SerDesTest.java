@@ -41,7 +41,7 @@ public class SerDesTest  extends AbstractRedisTest{
         authUser.setUsername(null);
         authUser.setEmail("qiyuwei@ishansong.com");
         authUser.setMobile("M20000871827");
-       // authUser.setDeviceId("86bb06d2-f876-48b3-9afb-28f7176f725e");
+        authUser.setDeviceId("86bb06d2-f876-48b3-9afb-28f7176f725e");
 
 
         AuthClient authClient = new AuthClient();
