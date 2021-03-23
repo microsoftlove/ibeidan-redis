@@ -371,4 +371,27 @@ public class User implements Serializable {
     public void setModifier(Long modifier) {
         this.modifier = modifier;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "globalId=" + globalId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
+                ", status=" + status +
+                ", nickname='" + nickname + '\'' +
+                ", gender=" + gender +
+                ", idNumber='" + idNumber + '\'' +
+                ", idName='" + idName + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", createClientId='" + createClientId + '\'' +
+                ", ctime=" + ctime +
+                ", mtime=" + mtime +
+                ", creator=" + creator +
+                ", modifier=" + modifier +
+                '}';
+    }
 }

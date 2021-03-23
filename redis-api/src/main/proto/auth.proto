@@ -1,0 +1,32 @@
+syntax = "proto3";
+package tutorial;
+option java_package = "com.ibeidan.tutorial";
+option java_outer_classname = "OAuth2AuthenticationProto";
+
+message AuthUser {
+ int64  bizId = 1;
+ int64  bizUserId = 2;
+ int64  globalId = 3;
+ string username = 4;
+ string email = 5;
+ string mobile = 6;
+ string deviceId = 7;
+}
+
+
+ message AuthClient {
+   string clientId = 1;
+   int64  bizId = 2;
+   string  name = 3;
+   string  resourceIds = 4;
+   string scope = 5;
+   string authorities = 6;
+ }
+
+
+message OAuth2Authentication {
+ AuthClient authClient = 1;
+ AuthUser authUser = 2 ;
+ string scope = 3 ;
+ string grantType = 4;
+}

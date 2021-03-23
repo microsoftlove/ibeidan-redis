@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeidan.core.pojo.AuthClient;
 import com.ibeidan.core.pojo.AuthUser;
 import com.ibeidan.core.pojo.OAuth2Authentication;
+import com.ibeidan.core.pojo.User;
 import com.ibeidan.core.protostuff.ProtoStuffUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,8 @@ public class SerDesTest  extends AbstractRedisTest{
 
     OAuth2Authentication auth2Authentication = new OAuth2Authentication();
     ObjectMapper objectMapper = new ObjectMapper();
+
+    User user = new User();
     @Before
     public void initObj(){
         AuthUser authUser = new AuthUser();
@@ -57,26 +60,41 @@ public class SerDesTest  extends AbstractRedisTest{
         auth2Authentication.setAuthUser(authUser);
         auth2Authentication.setScope("");
         auth2Authentication.setGrantType("regist_sms");
+
+
+        user.setGlobalId(13310388L);
+        user.setMobile("M20015975963");
+        user.setPassword("840d584d6130eadc263366868182a7f929eb232c");
+        user.setSalt("d2b38be803f3420b");
+        Byte b = new Byte("0");
+
+        user.setStatus(b);
+        user.setGender(b);
+        user.setCreateClientId("iss_user_app");
+        user.setCtime(1541808186732l);
+        user.setMtime(1541808186732l);
+        user.setCreator(0l);
+        user.setModifier(0l);
     }
 
     @Test
     public void testSer(){
         byte[] serializer = ProtoStuffUtils.serialize(auth2Authentication);
         for (int i = 0; i < serializer.length; i++) {
-            System.out.println(i + " : " + serializer[i]);
+            //System.out.println(i + " : " + serializer[i]);
         }
         OAuth2Authentication deserializer = ProtoStuffUtils.deserialize(serializer, OAuth2Authentication.class);
-        System.out.println("反序列化的结果： " + deserializer.getAuthClient().toString());
+        System.out.println(serializer.length +"=反序列化的结果： " + deserializer.getAuthClient().toString());
 
 
         try {
             byte[] serializer2 =  objectMapper.writeValueAsBytes(auth2Authentication);
             for (int i = 0; i < serializer2.length; i++) {
-                System.out.println(i + " : " + serializer2[i]);
+               // System.out.println(i + " : " + serializer2[i]);
             }
 
             OAuth2Authentication authUser1=  objectMapper.readValue(serializer2, OAuth2Authentication.class);
-            System.out.println("反序列化的结果： " + authUser1.getAuthClient().toString());
+            System.out.println(serializer2.length + "反序列化的结果： " + authUser1.getAuthClient().toString());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -137,5 +155,25 @@ public class SerDesTest  extends AbstractRedisTest{
         byte[] json = jedis.get(jsonKey.getBytes());
         OAuth2Authentication authUser1=  objectMapper.readValue(json, OAuth2Authentication.class);
         System.out.println("反序列化的结果： " + authUser1.getAuthUser().toString());
+    }
+    String pbUSerKey = "pbAUTH_CENTER:USER:MOBILE:M20015975963";
+    String jsonUSerKey = "jsonAUTH_CENTER:USER:MOBILE:M20015975963";
+    @Test
+    public void serUser() throws IOException {
+        byte[] serializer = ProtoStuffUtils.serialize(user);
+        byte[] serializer2 =  objectMapper.writeValueAsBytes(user);
+
+
+        jedis.setex(pbUSerKey.getBytes(),1000*60,serializer);
+        jedis.setex(jsonUSerKey.getBytes(),1000*60,serializer2);
+
+        byte[] pb = jedis.get(pbUSerKey.getBytes());
+        User deserializer = ProtoStuffUtils.deserialize(pb, User.class);
+        System.out.println("反序列化的结果： " + deserializer.toString());
+
+
+        byte[] json = jedis.get(jsonUSerKey.getBytes());
+        User authUser1=  objectMapper.readValue(json, User.class);
+        System.out.println("反序列化的结果： " + authUser1.toString());
     }
 }
