@@ -11,6 +11,8 @@
     <modules>
         <module>redis-api</module>
         <module>redis-core</module>
+        <module>redis-lettuce</module>
+        <module>redis-utils</module>
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
